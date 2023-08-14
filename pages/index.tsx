@@ -1,10 +1,25 @@
 import React from "react";
 import { GlobalStyles } from "@ui/theme/GlobalStyles";
+import { todoController } from "@ui/controller/todo";
 
-// const bg = "https://mariosouto.com/cursos/crudcomqualidade/bg";
-const bg = "/bg.jpeg"; // inside public folder
+const bg = "/bg.jpeg"; // side bar backeground image
+
+interface Todo {
+  id: string;
+  content: string;
+}
 
 function HomePage() {
+  const [todos, setTodos] = React.useState<Todo[]>([]);
+
+  React.useEffect(() => {
+    todoController.get().then((todos) => {
+      setTodos(todos);
+    });
+  }, []);
+
+  console.log(todos);
+
   return (
     <main>
       <GlobalStyles themeName="devsoutinho" />
@@ -42,23 +57,22 @@ function HomePage() {
           </thead>
 
           <tbody>
-            <tr>
-              <td>
-                <input type="checkbox" />
-              </td>
-              <td>d4f26</td>
-              <td>
-                Conteúdo de uma TODO Lorem ipsum dolor sit amet consectetur
-                adipisicing elit. Eaque vero facilis obcaecati, autem aliquid
-                eius! Consequatur eaque doloribus laudantium soluta optio odit,
-                provident, ab voluptates doloremque voluptas recusandae
-                aspernatur aperiam.
-              </td>
-              <td align="right">
-                <button data-type="delete">Apagar</button>
-              </td>
-            </tr>
+            {todos.map((currTodo) => {
+              return (
+                <tr key={currTodo.id}>
+                  <td>
+                    <input type="checkbox" />
+                  </td>
+                  <td>{currTodo.id.substring(0, 4)}</td>
+                  <td>{currTodo.content}</td>
+                  <td align="right">
+                    <button data-type="delete">Apagar</button>
+                  </td>
+                </tr>
+              );
+            })}
 
+            {/*
             <tr>
               <td colSpan={4} align="center" style={{ textAlign: "center" }}>
                 Carregando...
@@ -87,6 +101,7 @@ function HomePage() {
                 </button>
               </td>
             </tr>
+            */}
           </tbody>
         </table>
       </section>

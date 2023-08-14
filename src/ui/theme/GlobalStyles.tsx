@@ -53,6 +53,7 @@ const pallete = {
     x900: "#1F2933",
   },
 };
+
 type ThemeName = keyof typeof pallete;
 
 export function GlobalStyles({ themeName }: { themeName?: ThemeName }) {

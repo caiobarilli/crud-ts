@@ -1,10 +1,6 @@
-/* eslint-disable no-console */
-import fs from "fs"; // ES6
+import fs from "fs";
 import { v4 as uuid } from "uuid";
-// const fs = require("fs"); - CommonJS
 const DB_FILE_PATH = "./core/db";
-
-// console.log("[CRUD]");
 
 type UUID = string;
 
@@ -15,6 +11,11 @@ interface Todo {
   done: boolean;
 }
 
+/**
+ * Cria uma nova tarefa com o conteúdo fornecido e a adiciona ao banco de dados.
+ * @param {string} content - O conteúdo da nova tarefa.
+ * @returns {Todo} A tarefa recém-criada.
+ */
 function create(content: string): Todo {
   const todo: Todo = {
     id: uuid(),
@@ -25,7 +26,6 @@ function create(content: string): Todo {
 
   const todos: Array<Todo> = [...read(), todo];
 
-  // salvar o content no sistema
   fs.writeFileSync(
     DB_FILE_PATH,
     JSON.stringify(
@@ -37,23 +37,35 @@ function create(content: string): Todo {
       2
     )
   );
+
   return todo;
 }
 
+/**
+ * Lê as tarefas do banco de dados e retorna um array de objetos Todo.
+ * @returns {Array<Todo>} Um array contendo as tarefas armazenadas no banco de dados.
+ */
 export function read(): Array<Todo> {
   const dbString = fs.readFileSync(DB_FILE_PATH, "utf-8");
   const db = JSON.parse(dbString || "{}");
+
   if (!db.todos) {
-    // Fail Fast Validations
     return [];
   }
 
   return db.todos;
 }
 
+/**
+ * Atualiza uma tarefa existente com base no ID fornecido e nas informações parciais fornecidas.
+ * @param {UUID} id - O ID da tarefa a ser atualizada.
+ * @param {Partial<Todo>} partialTodo - As informações parciais a serem atualizadas na tarefa.
+ * @returns {Todo} A tarefa atualizada.
+ */
 function update(id: UUID, partialTodo: Partial<Todo>): Todo {
   let updatedTodo;
   const todos = read();
+
   todos.forEach((currentTodo) => {
     const isToUpdate = currentTodo.id === id;
     if (isToUpdate) {
@@ -79,12 +91,22 @@ function update(id: UUID, partialTodo: Partial<Todo>): Todo {
   return updatedTodo;
 }
 
+/**
+ * Atualiza o conteúdo de uma tarefa com base no ID fornecido.
+ * @param {UUID} id - O ID da tarefa a ser atualizada.
+ * @param {string} content - O novo conteúdo da tarefa.
+ * @returns {Todo} A tarefa com o conteúdo atualizado.
+ */
 function updateContentById(id: UUID, content: string): Todo {
   return update(id, {
     content,
   });
 }
 
+/**
+ * Exclui uma tarefa com base no ID fornecido.
+ * @param {UUID} id - O ID da tarefa a ser excluída.
+ */
 function deleteById(id: UUID) {
   const todos = read();
 
@@ -107,21 +129,9 @@ function deleteById(id: UUID) {
   );
 }
 
+/**
+ * Limpa completamente o banco de dados, apagando todo o seu conteúdo.
+ */
 function CLEAR_DB() {
   fs.writeFileSync(DB_FILE_PATH, "");
 }
-
-// [SIMULATION]
-// CLEAR_DB();
-// create("Primeira TODO");
-// const secondTodo = create("Segunda TODO");
-// deleteById(secondTodo.id);
-// const thirdTodo = create("Terceira TODO");
-// // update(thirdTodo.id, {
-// //   content: "Atualizada!",
-// //   done: true,
-// // });
-// updateContentById(thirdTodo.id, "Atualizada!")
-// const todos = read();
-// console.log(todos);
-// console.log(todos.length);

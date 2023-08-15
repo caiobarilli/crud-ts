@@ -16,13 +16,15 @@ interface TodoRepositoryGetOutput {
   pages: number;
 }
 
+/**
+ * Repository todo (UI)
+ */
 export const todoRepository = {
   get,
 };
 
 /**
  * Obtém uma lista paginada de tarefas.
- * @param {TodoRepositoryGetParams} params - Os parâmetros de entrada para a consulta.
  * @param {number} params.page - O número da página a ser obtida (começando em 1).
  * @param {number} params.limit - O número máximo de tarefas por página.
  * @returns {Promise<TodoRepositoryGetOutput>} Um objeto contendo as tarefas paginadas e informações sobre a paginação.

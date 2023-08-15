@@ -10,15 +10,14 @@ interface Todo {
 }
 
 function HomePage() {
+  const [page, setPage] = React.useState(1);
   const [todos, setTodos] = React.useState<Todo[]>([]);
 
   React.useEffect(() => {
-    todoController.get().then((todos) => {
+    todoController.get().then(({ todos }) => {
       setTodos(todos);
     });
   }, []);
-
-  console.log(todos);
 
   return (
     <main>
@@ -84,11 +83,17 @@ function HomePage() {
                 Nenhum item encontrado
               </td>
             </tr>
+            */}
 
             <tr>
               <td colSpan={4} align="center" style={{ textAlign: "center" }}>
-                <button data-type="load-more">
-                  Carregar mais{" "}
+                <button
+                  data-type="load-more"
+                  onClick={() => {
+                    setPage(page + 1);
+                  }}
+                >
+                  Página {page}, Carregar mais{" "}
                   <span
                     style={{
                       display: "inline-block",
@@ -101,7 +106,6 @@ function HomePage() {
                 </button>
               </td>
             </tr>
-            */}
           </tbody>
         </table>
       </section>

@@ -11,9 +11,6 @@ export default function handler(
   response: NextApiResponse
 ) {
   try {
-    // eslint-disable-next-line no-console
-    console.log(request.method); // Registra o método da solicitação no console
-
     if (request.method === "GET") {
       todoController.get(request, response);
       return;

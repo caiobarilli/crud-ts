@@ -12,9 +12,9 @@ interface Todo {
 }
 
 /**
- * Cria uma nova tarefa com o conteúdo fornecido e a adiciona ao banco de dados.
- * @param {string} content - O conteúdo da nova tarefa.
- * @returns {Todo} A tarefa recém-criada.
+ * Cria uma nova todo com o conteúdo fornecido e a adiciona ao banco de dados.
+ * @param {string} content - O conteúdo da nova todo.
+ * @returns {Todo} A todo recém-criada.
  */
 function create(content: string): Todo {
   const todo: Todo = {
@@ -42,8 +42,8 @@ function create(content: string): Todo {
 }
 
 /**
- * Lê as tarefas do banco de dados e retorna um array de objetos Todo.
- * @returns {Array<Todo>} Um array contendo as tarefas armazenadas no banco de dados.
+ * Lê as todos do banco de dados e retorna um array de objetos Todo.
+ * @returns {Array<Todo>} Um array contendo as todos armazenadas no banco de dados.
  */
 export function read(): Array<Todo> {
   const dbString = fs.readFileSync(DB_FILE_PATH, "utf-8");
@@ -57,10 +57,10 @@ export function read(): Array<Todo> {
 }
 
 /**
- * Atualiza uma tarefa existente com base no ID fornecido e nas informações parciais fornecidas.
- * @param {UUID} id - O ID da tarefa a ser atualizada.
- * @param {Partial<Todo>} partialTodo - As informações parciais a serem atualizadas na tarefa.
- * @returns {Todo} A tarefa atualizada.
+ * Atualiza uma todo existente com base no ID fornecido e nas informações parciais fornecidas.
+ * @param {UUID} id - O ID da todo a ser atualizada.
+ * @param {Partial<Todo>} partialTodo - As informações parciais a serem atualizadas na todo.
+ * @returns {Todo} A todo atualizada.
  */
 function update(id: UUID, partialTodo: Partial<Todo>): Todo {
   let updatedTodo;
@@ -92,10 +92,10 @@ function update(id: UUID, partialTodo: Partial<Todo>): Todo {
 }
 
 /**
- * Atualiza o conteúdo de uma tarefa com base no ID fornecido.
- * @param {UUID} id - O ID da tarefa a ser atualizada.
- * @param {string} content - O novo conteúdo da tarefa.
- * @returns {Todo} A tarefa com o conteúdo atualizado.
+ * Atualiza o conteúdo de uma todo com base no ID fornecido.
+ * @param {UUID} id - O ID da todo a ser atualizada.
+ * @param {string} content - O novo conteúdo da todo.
+ * @returns {Todo} A todo com o conteúdo atualizado.
  */
 function updateContentById(id: UUID, content: string): Todo {
   return update(id, {
@@ -104,8 +104,8 @@ function updateContentById(id: UUID, content: string): Todo {
 }
 
 /**
- * Exclui uma tarefa com base no ID fornecido.
- * @param {UUID} id - O ID da tarefa a ser excluída.
+ * Exclui uma todo com base no ID fornecido.
+ * @param {UUID} id - O ID da todo a ser excluída.
  */
 function deleteById(id: UUID) {
   const todos = read();

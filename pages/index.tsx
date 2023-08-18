@@ -10,22 +10,32 @@ interface Todo {
 }
 
 function HomePage() {
+  const [initialLoadComplete, setInitialLoadComplete] = React.useState(false);
+
   const [page, setPage] = React.useState(1),
-    [totalPages, setTotalPage] = React.useState(0);
+    [totalPages, setTotalPages] = React.useState(0);
 
   const [todos, setTodos] = React.useState<Todo[]>([]);
 
-  React.useEffect(() => {
-    todoController.get({ page }).then(({ todos, pages }) => {
-      if (page == 1) setTotalPage(pages);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-      setTodos((lastTodos) => {
-        return [...lastTodos, ...todos];
-      });
-    });
-  }, [page]);
-
+  const hasNoTodos = todos.length === 0 && !isLoading;
   const hasMorePages = totalPages > page;
+
+  React.useEffect(() => {
+    setInitialLoadComplete(true);
+    if (!initialLoadComplete) {
+      todoController
+        .get({ page })
+        .then(({ todos, pages }) => {
+          setTodos(todos);
+          setTotalPages(pages);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [page]);
 
   return (
     <main>
@@ -79,19 +89,21 @@ function HomePage() {
               );
             })}
 
-            {/*
-            <tr>
-              <td colSpan={4} align="center" style={{ textAlign: "center" }}>
-                Carregando...
-              </td>
-            </tr>
+            {isLoading && (
+              <tr>
+                <td colSpan={4} align="center" style={{ textAlign: "center" }}>
+                  Carregando...
+                </td>
+              </tr>
+            )}
 
-            <tr>
-              <td colSpan={4} align="center">
-                Nenhum item encontrado
-              </td>
-            </tr>
-            */}
+            {hasNoTodos && (
+              <tr>
+                <td colSpan={4} align="center">
+                  Nenhum item encontrado
+                </td>
+              </tr>
+            )}
 
             {hasMorePages && (
               <tr>
@@ -99,7 +111,21 @@ function HomePage() {
                   <button
                     data-type="load-more"
                     onClick={() => {
-                      setPage(page + 1);
+                      setIsLoading(true);
+                      const nextPage = page + 1;
+                      setPage(nextPage);
+
+                      todoController
+                        .get({ page: nextPage })
+                        .then(({ todos, pages }) => {
+                          setTodos((oldTodos) => {
+                            return [...oldTodos, ...todos];
+                          });
+                          setTotalPages(pages);
+                        })
+                        .finally(() => {
+                          setIsLoading(false);
+                        });
                     }}
                   >
                     Página {page}, Carregar mais{" "}

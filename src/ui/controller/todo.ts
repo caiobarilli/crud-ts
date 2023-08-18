@@ -1,7 +1,7 @@
 import { todoRepository } from "@ui/repository/todo";
 
 interface TodoControllerParams {
-  page?: number;
+  page: number;
 }
 
 /**
@@ -16,6 +16,6 @@ export const todoController = {
  * @param {number} params.page - O número da página a ser obtida (começando em 1).
  * @returns {Promise<Array>} Uma Promise que resolve para um array os todos obtidos do servidor.
  */
-async function get({ page }: TodoControllerParams = {}) {
-  return todoRepository.get({ page: page || 1, limit: 1 });
+async function get({ page }: TodoControllerParams) {
+  return todoRepository.get({ page, limit: 2 });
 }

@@ -10,14 +10,22 @@ interface Todo {
 }
 
 function HomePage() {
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = React.useState(1),
+    [totalPages, setTotalPage] = React.useState(0);
+
   const [todos, setTodos] = React.useState<Todo[]>([]);
 
   React.useEffect(() => {
-    todoController.get().then(({ todos }) => {
-      setTodos(todos);
+    todoController.get({ page }).then(({ todos, pages }) => {
+      if (page == 1) setTotalPage(pages);
+
+      setTodos((lastTodos) => {
+        return [...lastTodos, ...todos];
+      });
     });
-  }, []);
+  }, [page]);
+
+  const hasMorePages = totalPages > page;
 
   return (
     <main>
@@ -85,27 +93,29 @@ function HomePage() {
             </tr>
             */}
 
-            <tr>
-              <td colSpan={4} align="center" style={{ textAlign: "center" }}>
-                <button
-                  data-type="load-more"
-                  onClick={() => {
-                    setPage(page + 1);
-                  }}
-                >
-                  Página {page}, Carregar mais{" "}
-                  <span
-                    style={{
-                      display: "inline-block",
-                      marginLeft: "4px",
-                      fontSize: "1.2em",
+            {hasMorePages && (
+              <tr>
+                <td colSpan={4} align="center" style={{ textAlign: "center" }}>
+                  <button
+                    data-type="load-more"
+                    onClick={() => {
+                      setPage(page + 1);
                     }}
                   >
-                    ↓
-                  </span>
-                </button>
-              </td>
-            </tr>
+                    Página {page}, Carregar mais{" "}
+                    <span
+                      style={{
+                        display: "inline-block",
+                        marginLeft: "4px",
+                        fontSize: "1.2em",
+                      }}
+                    >
+                      ↓
+                    </span>
+                  </button>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </section>

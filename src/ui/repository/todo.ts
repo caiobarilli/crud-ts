@@ -35,25 +35,19 @@ function get({
   limit,
 }: TodoRepositoryGetParams): Promise<TodoRepositoryGetOutput> {
   try {
-    const todos = fetch("/api/todos").then(async (curTodos) => {
-      const stringTODOS = await curTodos.text();
+    return fetch(`/api/todos?page=${page}&limit=${limit}`).then(
+      async (curTodos) => {
+        const stringTODOS = await curTodos.text();
 
-      const ALL_TODOS = parseTodosFromServer(JSON.parse(stringTODOS));
+        const ALL_TODOS = parseTodosFromServer(JSON.parse(stringTODOS));
 
-      const startIndex = (page - 1) * limit,
-        endIndex = page * limit,
-        paginatedTodos = ALL_TODOS.todos.slice(startIndex, endIndex);
-
-      const totalPages = Math.ceil(ALL_TODOS.todos.length / limit);
-
-      return {
-        todos: paginatedTodos,
-        total: ALL_TODOS.todos.length,
-        pages: totalPages,
-      };
-    });
-
-    return todos;
+        return {
+          todos: ALL_TODOS.todos,
+          total: ALL_TODOS.total,
+          pages: ALL_TODOS.pages,
+        };
+      }
+    );
   } catch (error) {
     throw new Error("Erro ao obter a lista de todos no repository.");
   }
@@ -61,21 +55,27 @@ function get({
 
 /**
  * Obtém uma lista desconhecida e retorna um array de objetos do tipo Todos.
- * @param {unknown} reponseBody - O objeto que contem as todos.
+ * @param {unknown} responseBody - O objeto que contem as todos.
  * @returns {Array<Todo>} Um array do tipo Todo.
  * @throws {Error} Se ocorrer um erro com o tipo do objeto no array de todos.
  */
-function parseTodosFromServer(reponseBody: unknown): { todos: Array<Todo> } {
+function parseTodosFromServer(responseBody: unknown): {
+  total: number;
+  pages: number;
+  todos: Array<Todo>;
+} {
   if (
-    reponseBody !== null &&
-    typeof reponseBody === "object" &&
-    "todos" in reponseBody &&
-    Array.isArray(reponseBody.todos)
+    responseBody !== null &&
+    typeof responseBody === "object" &&
+    "todos" in responseBody &&
+    "total" in responseBody &&
+    "pages" in responseBody &&
+    Array.isArray(responseBody.todos)
   ) {
-    console.log("object", reponseBody.todos);
-
     return {
-      todos: reponseBody.todos.map((todo: unknown) => {
+      total: Number(responseBody.total),
+      pages: Number(responseBody.pages),
+      todos: responseBody.todos.map((todo: unknown) => {
         if (todo === null && typeof todo !== "object")
           throw new Error("Erro ao obter a objeto todo no repository.");
 
@@ -97,6 +97,8 @@ function parseTodosFromServer(reponseBody: unknown): { todos: Array<Todo> } {
   }
 
   return {
+    pages: 1,
+    total: 0,
     todos: [],
   };
 }

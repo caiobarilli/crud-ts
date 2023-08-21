@@ -10,21 +10,22 @@ interface Todo {
 }
 
 function HomePage() {
-  const [initialLoadComplete, setInitialLoadComplete] = React.useState(false);
+  const initialLoadComplete = React.useRef(false);
 
   const [page, setPage] = React.useState(1),
     [totalPages, setTotalPages] = React.useState(0);
 
   const [todos, setTodos] = React.useState<Todo[]>([]);
-
   const [isLoading, setIsLoading] = React.useState(true);
+
+  const [searchText, setSearchText] = React.useState("");
+  const homeTodos = todoController.filterTodosByContent(searchText, todos);
 
   const hasNoTodos = todos.length === 0 && !isLoading;
   const hasMorePages = totalPages > page;
 
   React.useEffect(() => {
-    setInitialLoadComplete(true);
-    if (!initialLoadComplete) {
+    if (!initialLoadComplete.current) {
       todoController
         .get({ page })
         .then(({ todos, pages }) => {
@@ -33,13 +34,14 @@ function HomePage() {
         })
         .finally(() => {
           setIsLoading(false);
+          initialLoadComplete.current = true;
         });
     }
   }, [page]);
 
   return (
     <main>
-      <GlobalStyles themeName="devsoutinho" />
+      <GlobalStyles themeName="crudComQualidade" />
       <header
         style={{
           backgroundImage: `url('${bg}')`,
@@ -58,7 +60,14 @@ function HomePage() {
 
       <section>
         <form>
-          <input type="text" placeholder="Filtrar lista atual, ex: Dentista" />
+          <input
+            type="text"
+            placeholder="Filtrar lista atual, ex: Dentista"
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+          />
         </form>
 
         <table border={1}>
@@ -74,7 +83,7 @@ function HomePage() {
           </thead>
 
           <tbody>
-            {todos.map((currTodo) => {
+            {homeTodos.map((currTodo) => {
               return (
                 <tr key={currTodo.id}>
                   <td>

@@ -28,6 +28,18 @@ const pallete = {
     x800: "#AD1D07",
     x900: "#841003",
   },
+  crudComQualidade: {
+    x050: "#80ffdb",
+    x100: "#72efdd",
+    x200: "#64dfdf",
+    x300: "#56cfe1",
+    x400: "#48bfe3",
+    x500: "#4ea8de",
+    x600: "#5390d9",
+    x700: "#5e60ce",
+    x800: "#6930c3",
+    x900: "#7400b8",
+  },
   red: {
     x050: "#FFE3E3",
     x100: "#FFBDBD",

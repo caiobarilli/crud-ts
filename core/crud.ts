@@ -132,6 +132,7 @@ export function deleteById(id: UUID) {
 /**
  * Limpa completamente o banco de dados, apagando todo o seu conteúdo.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function CLEAR_DB() {
   fs.writeFileSync(DB_FILE_PATH, "");
 }

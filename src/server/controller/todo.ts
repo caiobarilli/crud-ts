@@ -1,20 +1,26 @@
-import { todoRepository } from "@server/repository/todos";
 import { NextApiRequest, NextApiResponse } from "next";
+import { todoRepository } from "@server/repository/todos";
+import { z as schema } from "zod";
+
+const bodySchema = schema.object({
+  content: schema.string(),
+});
 
 /**
  * Controller todo (server)
  */
 export const todoController = {
   get,
+  create,
 };
 
 /**
  * Retorna todos.
- * @param {NextApiRequest} _ - O objeto de solicitação HTTP recebido (não utilizado neste contexto).
+ * @param {NextApiRequest} req - O objeto de solicitação HTTP recebido.
  * @param {NextApiResponse} res - O objeto de resposta HTTP a ser enviado.
  * @throws {Error} Se ocorrer um erro no servidor durante a recuperação das todos.
  */
-function get(req: NextApiRequest, res: NextApiResponse) {
+async function get(req: NextApiRequest, res: NextApiResponse) {
   try {
     const query = req.query;
     const page = Number(query.page);
@@ -38,4 +44,40 @@ function get(req: NextApiRequest, res: NextApiResponse) {
       error: "Internal server error",
     });
   }
+}
+
+/**
+ * Cria uma nova todo.
+ * @param {NextApiRequest} req - O objeto de solicitação HTTP recebido.
+ * @param {NextApiResponse} res - O objeto de resposta HTTP a ser enviado.
+ * @returns {Todo} - A todo criada.
+ */
+async function create(req: NextApiRequest, res: NextApiResponse) {
+  const body = bodySchema.safeParse(req.body);
+
+  if (!body.success) {
+    res.status(400).json({
+      error: {
+        message: "Invalid body",
+        description: body.error.issues,
+      },
+    });
+    return;
+  }
+
+  if (body.data.content === "") {
+    res.status(400).json({
+      error: {
+        message: "Empty content",
+        description: "You must provide a non empty string",
+      },
+    });
+    return;
+  }
+
+  const createdTodo = await todoRepository.createByContent(body.data.content);
+
+  return res.status(201).json({
+    todo: createdTodo,
+  });
 }

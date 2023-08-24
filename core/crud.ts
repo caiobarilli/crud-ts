@@ -16,7 +16,7 @@ interface Todo {
  * @param {string} content - O conteúdo da nova todo.
  * @returns {Todo} A todo recém-criada.
  */
-function create(content: string): Todo {
+export function create(content: string): Todo {
   const todo: Todo = {
     id: uuid(),
     date: new Date().toISOString(),
@@ -62,7 +62,7 @@ export function read(): Array<Todo> {
  * @param {Partial<Todo>} partialTodo - As informações parciais a serem atualizadas na todo.
  * @returns {Todo} A todo atualizada.
  */
-function update(id: UUID, partialTodo: Partial<Todo>): Todo {
+export function update(id: UUID, partialTodo: Partial<Todo>): Todo {
   let updatedTodo;
   const todos = read();
 
@@ -97,7 +97,7 @@ function update(id: UUID, partialTodo: Partial<Todo>): Todo {
  * @param {string} content - O novo conteúdo da todo.
  * @returns {Todo} A todo com o conteúdo atualizado.
  */
-function updateContentById(id: UUID, content: string): Todo {
+export function updateContentById(id: UUID, content: string): Todo {
   return update(id, {
     content,
   });
@@ -107,7 +107,7 @@ function updateContentById(id: UUID, content: string): Todo {
  * Exclui uma todo com base no ID fornecido.
  * @param {UUID} id - O ID da todo a ser excluída.
  */
-function deleteById(id: UUID) {
+export function deleteById(id: UUID) {
   const todos = read();
 
   const todosWithoutOne = todos.filter((todo) => {

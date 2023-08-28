@@ -69,7 +69,10 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  if (body.data.content === "") {
+  if (
+    body.data.content === "" ||
+    body.data.content.replace(/\s+/g, "") === ""
+  ) {
     res.status(400).json({
       error: {
         message: "Empty content",

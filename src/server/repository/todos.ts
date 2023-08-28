@@ -38,7 +38,7 @@ function get({
   const CurrentPage = page || 1;
   const CurrentLimit = limit || 10;
 
-  const ALL_TODOS = read();
+  const ALL_TODOS = read().reverse();
 
   const startIndex = (CurrentPage - 1) * CurrentLimit,
     endIndex = CurrentPage * CurrentLimit,

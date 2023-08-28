@@ -1,13 +1,9 @@
+import { Todo, TodoSchema } from "@ui/schema/todo";
+import { z as schema } from "zod";
+
 interface TodoRepositoryGetParams {
   page: number;
   limit: number;
-}
-
-interface Todo {
-  id: string;
-  date: Date;
-  content: string;
-  done: boolean;
 }
 
 interface TodoRepositoryGetOutput {
@@ -21,6 +17,7 @@ interface TodoRepositoryGetOutput {
  */
 export const todoRepository = {
   get,
+  createByContent,
 };
 
 /**
@@ -51,6 +48,38 @@ function get({
   } catch (error) {
     throw new Error("Erro ao obter a lista de todos no repository.");
   }
+}
+
+/**
+ * Cria uma todo com o conteúdo especificado.
+ * @param {string} content - O conteúdo da todo.
+ * @returns {Promise<Todo>} Uma Promise que resolve para a todo criada.
+ * @throws {Error} Se ocorrer um erro durante a criação da todo.
+ **/
+async function createByContent(content: string): Promise<Todo> {
+  const response = await fetch("/api/todos", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content }),
+  });
+
+  if (response.ok) {
+    const serverResponse = await response.json();
+    const serverResponseSchema = schema.object({
+      todo: TodoSchema,
+    });
+    const serverResponseParsed = serverResponseSchema.safeParse(serverResponse);
+
+    if (!serverResponseParsed.success) {
+      throw new Error("Erro ao criar a todo no repository.");
+    }
+
+    return serverResponseParsed.data.todo;
+  }
+
+  throw new Error("Erro ao criar a todo no repository.");
 }
 
 /**
@@ -89,7 +118,7 @@ function parseTodosFromServer(responseBody: unknown): {
         return {
           id,
           content,
-          date: new Date(date),
+          date: date,
           done: String(done).toLowerCase() === "true",
         };
       }),

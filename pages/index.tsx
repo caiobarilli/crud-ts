@@ -24,6 +24,8 @@ function HomePage() {
   const hasNoTodos = todos.length === 0 && !isLoading;
   const hasMorePages = totalPages > page;
 
+  const [newTodoContent, setNewTodoContent] = React.useState("");
+
   React.useEffect(() => {
     if (!initialLoadComplete.current) {
       todoController
@@ -50,8 +52,29 @@ function HomePage() {
         <div className="typewriter">
           <h1>O que fazer hoje?</h1>
         </div>
-        <form>
-          <input type="text" placeholder="Correr, Estudar..." />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            todoController.create({
+              content: newTodoContent,
+              onSucess(todo: Todo) {
+                setTodos((oldTodos) => {
+                  return [todo, ...oldTodos];
+                });
+              },
+              onError(errorMessage) {
+                alert(errorMessage || "Erro ao criar todo");
+              },
+            });
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Correr, Estudar..."
+            onChange={function newTodoHandler(e) {
+              setNewTodoContent(e.target.value);
+            }}
+          />
           <button type="submit" aria-label="Adicionar novo item">
             +
           </button>

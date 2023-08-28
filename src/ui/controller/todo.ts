@@ -1,7 +1,15 @@
 import { todoRepository } from "@ui/repository/todo";
+import { Todo } from "@ui/schema/todo";
+import { z as schema } from "zod";
 
-interface TodoControllerParams {
+interface TodoControllerGetParams {
   page: number;
+}
+
+interface TodoControllerCreateParams {
+  content: string;
+  onError: (errorMessage?: string) => void;
+  onSucess: (todo: Todo) => void;
 }
 
 /**
@@ -9,6 +17,7 @@ interface TodoControllerParams {
  */
 export const todoController = {
   get,
+  create,
   filterTodosByContent,
 };
 
@@ -17,8 +26,30 @@ export const todoController = {
  * @param {number} params.page - O número da página a ser obtida (começando em 1).
  * @returns {Promise<Array>} Uma Promise que resolve para um array os todos obtidos do servidor.
  */
-async function get({ page }: TodoControllerParams) {
+async function get({ page }: TodoControllerGetParams) {
   return todoRepository.get({ page, limit: 2 });
+}
+
+async function create({
+  content,
+  onError,
+  onSucess,
+}: TodoControllerCreateParams) {
+  const parsedParams = schema.string().nonempty().safeParse(content);
+
+  if (!parsedParams.success) {
+    onError("O conteúdo da todo não pode ser vazio.");
+    return;
+  }
+
+  todoRepository
+    .createByContent(parsedParams.data)
+    .then((newTodo) => {
+      onSucess(newTodo);
+    })
+    .catch(() => {
+      onError();
+    });
 }
 
 /**

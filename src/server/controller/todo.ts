@@ -2,6 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { todoRepository } from "@server/repository/todos";
 import { z as schema } from "zod";
 
+/**
+ * Validação do corpo da requisição.
+ */
 const bodySchema = schema.object({
   content: schema.string(),
 });
@@ -29,6 +32,7 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
     if (query.page && isNaN(page)) {
       throw new Error("Invalid query params");
     }
+
     if (query.limit && isNaN(page)) {
       throw new Error("Invalid query params");
     }

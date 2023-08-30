@@ -1,4 +1,4 @@
-import { read, create } from "@db-crud-todo";
+import { read, create, update } from "@db-crud-todo";
 
 interface Todo {
   id: string;
@@ -24,6 +24,7 @@ interface TodoRepositoryGetOutput {
 export const todoRepository = {
   get,
   createByContent,
+  toggleDone,
 };
 
 /**
@@ -57,9 +58,28 @@ function get({
  * Cria uma nova todo.
  * @param {string} content - Conteúdo da todo.
  * @returns {Todo} - A todo criada.
+ * @throws {Error} Se a todo não for encontrada.
  **/
 async function createByContent(content: string): Promise<Todo> {
   const newTodo = create(content);
-
   return newTodo;
+}
+
+/**
+ * Alterna o estado de done de uma todo.
+ * @param {string} id - ID da todo.
+ * @returns {Todo} - A todo atualizada.
+ * @throws {Error} Se a todo não for encontrada.
+ **/
+async function toggleDone(id: string): Promise<Todo> {
+  const ALL_TODOS = read();
+  const todo = ALL_TODOS.find((todo) => todo.id === id);
+
+  if (!todo) throw new Error("Todo not found");
+
+  const updatedTodo = update(todo.id, {
+    done: !todo.done,
+  });
+
+  return updatedTodo;
 }

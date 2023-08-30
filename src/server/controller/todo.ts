@@ -15,6 +15,7 @@ const bodySchema = schema.object({
 export const todoController = {
   get,
   create,
+  toggleDone,
 };
 
 /**
@@ -73,10 +74,11 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
     body.data.content === "" ||
     body.data.content.replace(/\s+/g, "") === ""
   ) {
-    res.status(400).json({
+    res.status(411).json({
       error: {
-        message: "Empty content",
-        description: "You must provide a non empty string",
+        message: "Length Required",
+        description:
+          "The request did not specify the length of its content, which is required by the requested resource.",
       },
     });
     return;
@@ -87,4 +89,38 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
   return res.status(201).json({
     todo: createdTodo,
   });
+}
+
+/**
+ * Altera o status de done de uma todo.
+ * @param {NextApiRequest} req - O objeto de solicitação HTTP recebido.
+ * @param {NextApiResponse} res - O objeto de resposta HTTP a ser enviado.
+ * @returns {Todo} - A todo atualizada.
+ * @throws {Error} Se ocorrer um erro no servidor durante a alteração do status de done da todo.
+ */
+async function toggleDone(req: NextApiRequest, res: NextApiResponse) {
+  const todoId = req.query.id;
+
+  if (!todoId || typeof todoId !== "string") {
+    res.status(400).json({
+      error: {
+        message: "You must to provide a valid todo id",
+      },
+    });
+    return;
+  }
+
+  try {
+    const updatedTodo = await todoRepository.toggleDone(todoId);
+
+    res.status(200).json({
+      todo: updatedTodo,
+    });
+  } catch (error) {
+    if (error instanceof Error)
+      res.status(404).json({
+        error: error.message,
+      });
+    return;
+  }
 }

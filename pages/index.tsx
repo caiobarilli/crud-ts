@@ -7,6 +7,7 @@ const bg = "/bg.jpeg"; // side bar backeground image
 interface Todo {
   id: string;
   content: string;
+  done: boolean;
 }
 
 function HomePage() {
@@ -110,7 +111,31 @@ function HomePage() {
               return (
                 <tr key={currTodo.id}>
                   <td>
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      checked={currTodo.done}
+                      onChange={function toogleDoneHandler() {
+                        todoController.toggleDone({
+                          todoId: currTodo.id,
+                          onCheckboxChange() {
+                            setTodos((prevTodos) => {
+                              return prevTodos.map((prevTodo) => {
+                                if (prevTodo.id === currTodo.id) {
+                                  return {
+                                    ...prevTodo,
+                                    done: !prevTodo.done,
+                                  };
+                                }
+                                return prevTodo;
+                              });
+                            });
+                          },
+                          onError() {
+                            alert("Error ao atualizar todo");
+                          },
+                        });
+                      }}
+                    />
                   </td>
                   <td>{currTodo.id.substring(0, 4)}</td>
                   <td>{currTodo.content}</td>

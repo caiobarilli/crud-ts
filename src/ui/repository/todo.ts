@@ -18,6 +18,7 @@ interface TodoRepositoryGetOutput {
 export const todoRepository = {
   get,
   createByContent,
+  toggleDone,
 };
 
 /**
@@ -130,4 +131,30 @@ function parseTodosFromServer(responseBody: unknown): {
     total: 0,
     todos: [],
   };
+}
+
+async function toggleDone(id: string): Promise<Todo> {
+  const response = await fetch(`/api/todos/${id}/toggle-done`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    const serverResponse = await response.json();
+    const serverResponseSchema = schema.object({
+      todo: TodoSchema,
+    });
+    const serverResponseParsed = serverResponseSchema.safeParse(serverResponse);
+
+    if (!serverResponseParsed.success) {
+      throw new Error("Erro ao alterar a todo no repository.");
+    }
+
+    const updatedTodo = serverResponseParsed.data.todo;
+    return updatedTodo;
+  }
+
+  throw new Error("Erro ao alterar a todo no repository.");
 }

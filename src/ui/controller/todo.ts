@@ -12,6 +12,12 @@ interface TodoControllerCreateParams {
   onSucess: (todo: Todo) => void;
 }
 
+interface TodoControllerToggleDoneParams {
+  todoId: string;
+  onCheckboxChange: () => void;
+  onError: () => void;
+}
+
 /**
  * Controlador todo (UI)
  */
@@ -19,6 +25,7 @@ export const todoController = {
   get,
   create,
   filterTodosByContent,
+  toggleDone,
 };
 
 /**
@@ -30,6 +37,13 @@ async function get({ page }: TodoControllerGetParams) {
   return todoRepository.get({ page, limit: 2 });
 }
 
+/**
+ * Criar uma nova todo.
+ * @param {string} params.content - O conteúdo da todo.
+ * @param {Function} params.onError - Função a ser chamada em caso de erro.
+ * @param {Function} params.onSucess - Função a ser chamada em caso de sucesso.
+ * @returns {Promise<void>} Uma Promise que resolve quando a todo for criada.
+ **/
 async function create({
   content,
   onError,
@@ -69,4 +83,25 @@ function filterTodosByContent<Todo>(
     return contentLowerCase.includes(textSearchLowerCase);
   });
   return filteredTodos;
+}
+
+/**
+ * Altera o estado de done de uma todo.
+ * @param {string} id - O id da todo.
+ **/
+async function toggleDone({
+  todoId,
+  onCheckboxChange,
+  onError,
+}: TodoControllerToggleDoneParams) {
+  todoRepository
+    .toggleDone(todoId)
+    .then(() => {
+      onCheckboxChange();
+    })
+    .catch(() => {
+      onError();
+    });
+
+  return;
 }

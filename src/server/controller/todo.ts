@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { todoRepository } from "@server/repository/todos";
 import { z as schema } from "zod";
+import { HttpNotFoundError } from "@server/infra/errors";
 
 /**
  * Validação do corpo da requisição.
@@ -16,6 +17,7 @@ export const todoController = {
   get,
   create,
   toggleDone,
+  deleteById,
 };
 
 /**
@@ -122,5 +124,45 @@ async function toggleDone(req: NextApiRequest, res: NextApiResponse) {
         error: error.message,
       });
     return;
+  }
+}
+
+/**
+ * Deleta uma todo.
+ * @param {NextApiRequest} req - O objeto de solicitação HTTP recebido.
+ * @param {NextApiResponse} res - O objeto de resposta HTTP a ser enviado.
+ */
+async function deleteById(req: NextApiRequest, res: NextApiResponse) {
+  const QuerySchema = schema.object({
+    id: schema.string().uuid().nonempty(),
+  });
+  const parsedQuery = QuerySchema.safeParse(req.query);
+
+  if (!parsedQuery.success) {
+    res.status(400).json({
+      error: {
+        message: "You must to provide a valid todo uuid",
+      },
+    });
+    return;
+  }
+
+  try {
+    const todoId = parsedQuery.data.id;
+    await todoRepository.deleteById(todoId);
+    res.status(204).end();
+  } catch (error) {
+    if (error instanceof HttpNotFoundError) {
+      return res.status(error.status).json({
+        error: {
+          message: error.message,
+        },
+      });
+    }
+    res.status(500).json({
+      error: {
+        message: `Internal server error`,
+      },
+    });
   }
 }

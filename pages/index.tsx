@@ -140,7 +140,14 @@ function HomePage() {
                   <td>{currTodo.id.substring(0, 4)}</td>
                   <td>{currTodo.content}</td>
                   <td align="right">
-                    <button data-type="delete">Apagar</button>
+                    <button
+                      data-type="delete"
+                      onChange={function deleteTodoHandler() {
+                        // todoController.deleteById
+                      }}
+                    >
+                      Apagar
+                    </button>
                   </td>
                 </tr>
               );

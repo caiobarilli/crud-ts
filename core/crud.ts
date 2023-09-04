@@ -107,7 +107,7 @@ export function updateContentById(id: UUID, content: string): Todo {
  * Exclui uma todo com base no ID fornecido.
  * @param {UUID} id - O ID da todo a ser excluída.
  */
-export function deleteById(id: UUID) {
+export function dbDeleteById(id: UUID) {
   const todos = read();
 
   const todosWithoutOne = todos.filter((todo) => {

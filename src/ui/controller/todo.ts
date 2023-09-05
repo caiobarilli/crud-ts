@@ -26,6 +26,7 @@ export const todoController = {
   create,
   filterTodosByContent,
   toggleDone,
+  deleteById,
 };
 
 /**
@@ -64,6 +65,10 @@ async function create({
     .catch(() => {
       onError();
     });
+}
+
+async function deleteById(todoId: string): Promise<void> {
+  await todoRepository.deleteById(todoId);
 }
 
 /**

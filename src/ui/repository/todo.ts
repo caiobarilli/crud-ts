@@ -19,6 +19,7 @@ export const todoRepository = {
   get,
   createByContent,
   toggleDone,
+  deleteById,
 };
 
 /**
@@ -81,6 +82,16 @@ async function createByContent(content: string): Promise<Todo> {
   }
 
   throw new Error("Erro ao criar a todo no repository.");
+}
+
+async function deleteById(todoId: string) {
+  const response = await fetch(`/api/todos/${todoId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao deletar a todo no repository.");
+  }
 }
 
 /**

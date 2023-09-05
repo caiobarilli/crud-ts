@@ -142,8 +142,21 @@ function HomePage() {
                   <td align="right">
                     <button
                       data-type="delete"
-                      onChange={function deleteTodoHandler() {
-                        // todoController.deleteById
+                      onClick={function deleteTodoHandler() {
+                        todoController
+                          .deleteById(currTodo.id)
+                          .then(() => {
+                            setTodos((prevTodos) => {
+                              return prevTodos.filter((currentTodo) => {
+                                if (currentTodo.id !== currTodo.id)
+                                  return false;
+                                return true;
+                              });
+                            });
+                          })
+                          .catch(() => {
+                            console.error("Erro ao deletar todo");
+                          });
                       }}
                     >
                       Apagar

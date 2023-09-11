@@ -1,3 +1,6 @@
+/**
+ * Adiciona mensagem de erro ao objeto de resposta.
+ */
 export class HttpNotFoundError extends Error {
   status: number;
 

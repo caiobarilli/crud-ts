@@ -84,6 +84,10 @@ async function createByContent(content: string): Promise<Todo> {
   throw new Error("Erro ao criar a todo no repository.");
 }
 
+/**
+ * Exclui uma todo com base no ID fornecido.
+ * @param {string} todoId - ID da todo.
+ */
 async function deleteById(todoId: string) {
   const response = await fetch(`/api/todos/${todoId}`, {
     method: "DELETE",
@@ -144,6 +148,12 @@ function parseTodosFromServer(responseBody: unknown): {
   };
 }
 
+/**
+ * Altera o estado de done de uma todo.
+ * @param {string} id - O id da todo.
+ * @returns {Promise<Todo>} Uma Promise que resolve para a todo atualizada.
+ * @throws {Error} Se ocorrer um erro durante a alteração do status de done da todo.
+ **/
 async function toggleDone(id: string): Promise<Todo> {
   const response = await fetch(`/api/todos/${id}/toggle-done`, {
     method: "PUT",

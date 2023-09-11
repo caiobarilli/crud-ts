@@ -9,9 +9,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "test": "npm run cy:run",
     "lint": "eslint './**/*.{jsx,jsx,ts,tsx}'",
-    "lint:fix": "npm run lint -- --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint:fix": "npm run lint -- --fix"
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
     "@types/react": "18.0.29",
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "cypress": "^13.1.0",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",

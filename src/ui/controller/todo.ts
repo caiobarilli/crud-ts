@@ -67,6 +67,11 @@ async function create({
     });
 }
 
+/**
+ * Deleta uma todo pelo id.
+ * @param {string} todoId - O id da todo.
+ * @returns {Promise<void>} Uma Promise que resolve quando a todo for deletada.
+ **/
 async function deleteById(todoId: string): Promise<void> {
   await todoRepository.deleteById(todoId);
 }

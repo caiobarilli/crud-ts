@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { todoRepository } from "@server/repository/todos";
-import { z as schema } from "zod";
 import { HttpNotFoundError } from "@server/infra/errors";
+import { z as schema } from "zod";
 
 /**
  * Validação do corpo da requisição.
